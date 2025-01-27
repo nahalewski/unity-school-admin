@@ -2,7 +2,7 @@ services:
   - type: web
     name: unity-school-admin
     env: static
-    buildCommand: npm run render-build
+    buildCommand: ./build.sh
     staticPublishPath: ./build
     pullRequestPreviewsEnabled: true
     envVars:
