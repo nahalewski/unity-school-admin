@@ -1,0 +1,62 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to get user data
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data
+    }
+
+    // Helper function to check if user is a teacher
+    function isTeacher() {
+      return isAuthenticated() && getUserData().role == "TEACHER"
+    }
+
+    // Helper function to check if user is an admin
+    function isAdmin() {
+      return isAuthenticated() && getUserData().role == "ADMIN"
+    }
+
+    // Allow users to read and write their own documents
+    match /users/{userId} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    // News collection rules - more permissive for testing
+    match /news/{newsId} {
+      // Anyone can read news
+      allow read: if true;
+      
+      // Any authenticated user can create news for now
+      allow create: if isAuthenticated();
+      
+      // Any authenticated user can update/delete their own news
+      allow update, delete: if isAuthenticated() && (
+        resource.data.authorId == request.auth.uid || 
+        getUserData().role == "ADMIN"
+      );
+    }
+    
+    // Allow users to read school information
+    match /schools/{schoolId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // Allow users to read and write their own messages
+    match /messages/{messageId} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    // Allow users to read and write calendar events
+    match /calendar/{eventId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+  }
+}
