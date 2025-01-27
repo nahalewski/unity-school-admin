@@ -2,7 +2,7 @@ services:
   - type: web
     name: unity-school-admin
     env: static
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --production=false && npm run build
     staticPublishPath: build
     pullRequestPreviewsEnabled: false
     envVars:
@@ -11,7 +11,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: CI
-        value: false
+        value: "false"
     headers:
       - path: /*
         name: Cache-Control
