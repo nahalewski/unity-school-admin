@@ -2,12 +2,14 @@ services:
   - type: web
     name: unity-school-admin
     env: static
-    buildCommand: ./build.sh
-    staticPublishPath: ./build
-    pullRequestPreviewsEnabled: true
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    pullRequestPreviewsEnabled: false
     envVars:
       - key: NODE_VERSION
         value: 16.x
+      - key: NODE_ENV
+        value: production
       - key: CI
         value: false
     headers:
